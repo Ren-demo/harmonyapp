@@ -59,7 +59,6 @@ export interface DevicesResponse {
  */
 interface FanTopicsType {
   readonly TELEMETRY: string
-  readonly COMMAND: string
   readonly STATUS: string
   readonly FAN_STATUS: string
   readonly QUERY_FAN_STATUS: string
@@ -73,7 +72,6 @@ interface FanTopicsType {
  */
 export const FanTopics: FanTopicsType = {
   TELEMETRY:         'fan/devices/fan-001/telemetry',
-  COMMAND:           'fan/devices/fan-001/command',
   STATUS:            'fan/devices/fan-001/status',
   FAN_STATUS:        'fan_status',
   QUERY_FAN_STATUS:  'quary_fan_status',
