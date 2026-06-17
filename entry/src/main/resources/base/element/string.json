@@ -1,0 +1,56 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "智能家具风扇监控"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "智能风扇控制"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "智能风扇"
+    },
+    {
+      "name": "internet_permission_reason",
+      "value": "用于连接MQTT服务器以监控智能风扇状态"
+    },
+    {
+      "name": "connected",
+      "value": "已连接"
+    },
+    {
+      "name": "disconnected",
+      "value": "网络连接异常"
+    },
+    {
+      "name": "connecting",
+      "value": "正在连接..."
+    },
+    {
+      "name": "fan_title",
+      "value": "智能风扇"
+    },
+    {
+      "name": "status_running",
+      "value": "运行中"
+    },
+    {
+      "name": "status_stopped",
+      "value": "已停止"
+    },
+    {
+      "name": "status_offline",
+      "value": "未连接"
+    },
+    {
+      "name": "power_label",
+      "value": "电源开关"
+    },
+    {
+      "name": "network_error",
+      "value": "网络连接异常"
+    }
+  ]
+}

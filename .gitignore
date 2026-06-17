@@ -1,0 +1,41 @@
+# ========================================
+# HarmonyOS DevEco Studio .gitignore
+# ========================================
+
+# ==== IDE 配置文件 ====
+/.idea
+/.hvigor
+/.claude/
+/.appanalyzer
+
+# ==== 依赖包目录（自动生成，不应提交） ====
+/node_modules
+**/oh_modules
+
+# ==== 依赖锁文件（自动生成，不应提交） ====
+**/oh-package-lock.json5
+
+# ==== 本地开发环境配置 ====
+/local.properties
+
+# ==== 构建输出目录 ====
+**/build
+**/.cxx
+**/.preview
+
+# ==== 测试构建输出目录 ====
+**/.test
+
+# ==== C/C++ 代码风格配置 ====
+**/.clangd
+**/.clang-format
+**/.clang-tidy
+
+# ==== 应用包构建产物 ====
+*.hap
+*.hsp
+*.app
+
+# ==== 操作系统生成文件 ====
+.DS_Store
+Thumbs.db
