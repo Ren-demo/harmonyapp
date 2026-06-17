@@ -176,7 +176,6 @@ export class FanService {
       this.startDevicePolling();
 
       hilog.info(DOMAIN, TAG, 'FanService 连接成功，已订阅主题');
-      this.showToast('已连接到智能风扇');
 
     } catch (err) {
       hilog.error(DOMAIN, TAG, `FanService 连接失败: ${JSON.stringify(err)}`);
@@ -546,9 +545,10 @@ export class FanService {
         this.deviceOnline = (fanDevice?.status === 'online');
         hilog.info(DOMAIN, TAG, `设备发现响应: 风扇${this.deviceOnline ? '在线' : '离线'}`);
 
-        // 如果从离线变为在线，更新 UI 状态
+        // 如果从离线变为在线，更新 UI 状态并提示
         if (!wasOnline && this.deviceOnline) {
           this.updateStatusText();
+          this.showToast('已连接到智能风扇');
         }
 
         // 清除设备发现超时定时器并通知全局刷新

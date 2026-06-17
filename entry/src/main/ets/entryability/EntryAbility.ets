@@ -5,9 +5,9 @@ import { FanService } from '../services/FanService';
 
 const DOMAIN = 0x0000;
 
-// EMQX MQTT Broker 地址 (请替换为实际 IP)
+// EMQX MQTT Broker 地址
 const MQTT_BROKER_URL = 'tcp://10.0.2.2:1883';
-const MQTT_CLIENT_ID = 'harmony-fan-app';
+const MQTT_CLIENT_ID = 'harmony-app';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
