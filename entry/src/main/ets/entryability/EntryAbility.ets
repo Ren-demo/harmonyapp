@@ -46,9 +46,11 @@ export default class EntryAbility extends UIAbility {
 
   onForeground(): void {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
+    FanService.getInstance().onAppForeground();
   }
 
   onBackground(): void {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
+    FanService.getInstance().onAppBackground();
   }
 }

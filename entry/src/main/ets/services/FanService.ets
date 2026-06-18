@@ -52,11 +52,12 @@ export class FanService {
   // ====== 刷新控制 ======
   private refreshTimerId: number = -1;
 
-  // ====== 设备发现与轮询 ======
-  private devicePollTimerId: number = -1;
-  private readonly DEVICE_POLL_INTERVAL: number = 10000;      // 后台轮询间隔 10s
+  // ====== 自动全局刷新 ======
+  private autoRefreshTimerId: number = -1;
+  private readonly AUTO_REFRESH_INTERVAL: number = 10000;      // 自动刷新间隔 10s
   private readonly DEVICE_CHECK_TIMEOUT: number = 2000;       // 设备发现超时 2s
   private deviceCheckTimerId: number = -1;                    // 设备发现超时定时器
+  @Trace isBackground: boolean = false;                        // 是否在后台
 
   // ====== 重连控制 ======
   private reconnectTimer: number = -1;
@@ -143,8 +144,8 @@ export class FanService {
         this.fanRunning = false;
         this.errorMessage = '网络连接异常';
 
-        // 停止设备轮询
-        this.stopDevicePolling();
+        // 停止自动全局刷新
+        this.stopAutoRefresh();
 
         // 取消进行中的操作
         if (this.confirmCallback) {
@@ -172,8 +173,8 @@ export class FanService {
       await this.discoverDevices(true);
       await this.queryFanStatus(true);
 
-      // 启动后台设备轮询（10s 间隔，静默）
-      this.startDevicePolling();
+      // 启动自动全局刷新
+      this.startAutoRefresh();
 
       hilog.info(DOMAIN, TAG, 'FanService 连接成功，已订阅主题');
 
@@ -194,7 +195,7 @@ export class FanService {
   async disconnect(): Promise<void> {
     this.stopReconnect();
     this.stopDialogCycle();
-    this.stopDevicePolling();
+    this.stopAutoRefresh();
     this.reconnecting = false;
     await this.mqttService.disconnect();
     this.connected = false;
@@ -507,27 +508,56 @@ export class FanService {
   }
 
   /**
-   * 启动后台设备轮询（10s 间隔，静默）
+   * 启动自动全局刷新（设备发现 + 风扇状态查询，静默模式）
    */
-  startDevicePolling(): void {
-    if (this.devicePollTimerId !== -1) {
-      return; // 已在轮询中
+  startAutoRefresh(): void {
+    if (this.autoRefreshTimerId !== -1) {
+      return; // 已在运行中
     }
-    hilog.info(DOMAIN, TAG, `启动设备轮询，间隔 ${this.DEVICE_POLL_INTERVAL}ms`);
-    this.devicePollTimerId = setInterval(() => {
+    hilog.info(DOMAIN, TAG, `启动自动全局刷新，间隔 ${this.AUTO_REFRESH_INTERVAL}ms`);
+    this.autoRefreshTimerId = setInterval(() => {
+      if (!this.connected) {
+        return;
+      }
+      // 静默执行：设备发现 + 风扇状态查询
       this.discoverDevices(true);
-    }, this.DEVICE_POLL_INTERVAL);
+      this.queryFanStatus(true);
+    }, this.AUTO_REFRESH_INTERVAL);
   }
 
   /**
-   * 停止后台设备轮询
+   * 停止自动全局刷新
    */
-  stopDevicePolling(): void {
-    if (this.devicePollTimerId !== -1) {
-      clearInterval(this.devicePollTimerId);
-      this.devicePollTimerId = -1;
-      hilog.info(DOMAIN, TAG, '已停止设备轮询');
+  stopAutoRefresh(): void {
+    if (this.autoRefreshTimerId !== -1) {
+      clearInterval(this.autoRefreshTimerId);
+      this.autoRefreshTimerId = -1;
+      hilog.info(DOMAIN, TAG, '已停止自动全局刷新');
     }
+  }
+
+  /**
+   * App 回到前台回调 — 立即刷新 + 恢复定时刷新
+   */
+  onAppForeground(): void {
+    this.isBackground = false;
+    hilog.info(DOMAIN, TAG, 'App 回到前台');
+    if (this.connected) {
+      // 立即执行一次全局刷新获取最新状态
+      this.discoverDevices(true);
+      this.queryFanStatus(true);
+      // 恢复定时全局刷新
+      this.startAutoRefresh();
+    }
+  }
+
+  /**
+   * App 进入后台回调 — 停止定时刷新以省电
+   */
+  onAppBackground(): void {
+    this.isBackground = true;
+    hilog.info(DOMAIN, TAG, 'App 进入后台，停止自动刷新');
+    this.stopAutoRefresh();
   }
 
   /**
